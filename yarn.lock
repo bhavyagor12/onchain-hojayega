@@ -2211,6 +2211,7 @@ __metadata:
     eslint-config-next: ~14.2.15
     eslint-config-prettier: ~8.10.0
     eslint-plugin-prettier: ~5.2.1
+    geist: ^1.3.1
     lucide-react: ^0.468.0
     next: ~14.2.11
     next-nprogress-bar: ~2.3.13
@@ -7690,6 +7691,15 @@ __metadata:
     strip-ansi: ^6.0.1
     wide-align: ^1.1.2
   checksum: 81296c00c7410cdd48f997800155fbead4f32e4f82109be0719c63edc8560e6579946cc8abd04205297640691ec26d21b578837fd13a4e96288ab4b40b1dc3e9
+  languageName: node
+  linkType: hard
+
+"geist@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "geist@npm:1.3.1"
+  peerDependencies:
+    next: ">=13.2.0"
+  checksum: d8e420a6a139a88e1787c807553fe7719b86c625b0dc0ec1fdac484825b6048d6814f4f577668101cc3cb26f2371eb3d9866855a0b273fa0764400130165243d
   languageName: node
   linkType: hard
 
