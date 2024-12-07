@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Options } from "./Options";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { Bot, GlobeIcon, Paperclip, SendHorizonalIcon } from "lucide-react";
+import { Bot, ChartNetwork, GlobeIcon, LoaderIcon, Paperclip, SendHorizonalIcon, User } from "lucide-react";
 import { FASTAPI_URL } from "~~/constants";
 import { useAgent } from "~~/providers/AgenticProvider";
 import { Avatar, AvatarFallback } from "~~/shadcn/components/ui/avatar";
@@ -121,7 +121,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
 
   const getAvatarContent = (role: string) => {
     if (role === "user") {
-      return <Image src="/logan.png" alt="User" width={32} height={32} className="rounded-full" />;
+      return <User className="h-5 w-5" />;
     } else {
       return <Bot className="h-5 w-5" />;
     }
@@ -131,13 +131,13 @@ const MessageRenderer = ({ message }: { message: any }) => {
   }
   return (
     <div key={message.id} className={`flex flex-col mb-6 ${message.role === "user" ? "items-end" : "items-start"}`}>
-      <div className={`flex gap-3 items-center max-w-[80%]`}>
+      <div className={`flex gap-3 items-center max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
         <Avatar className="w-8 h-8">
           <AvatarFallback className="bg-primary text-primary-foreground">
             {getAvatarContent(message.role)}
           </AvatarFallback>
         </Avatar>
-        <div className={`rounded-3xl px-2 py-1 ${getMessageBackground(message.type)}`}>
+        <div className={`rounded-3xl px-2 min-w-[40px] ${getMessageBackground(message.type)}`}>
           {messageTypeRenderer(message)}
           {message.experimental_attachments?.map((attachment: any, index: number) => (
             <div key={index} className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
@@ -148,10 +148,10 @@ const MessageRenderer = ({ message }: { message: any }) => {
         </div>
       </div>
       {message.type === "moveToResearcher" && (
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2 mt-2 ml-12">
           <Button
             variant="default"
-            className="w-[100px]"
+            className="w-[100px] bg-success"
             onClick={() => {
               chatWorkflow.mutate(
                 {
@@ -194,7 +194,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </Button>
           <Button
             variant="destructive"
-            className="w-[100px]"
+            className="w-[100px] bg-error"
             onClick={() => {
               chatWorkflow.mutate(
                 {
@@ -215,10 +215,10 @@ const MessageRenderer = ({ message }: { message: any }) => {
         </div>
       )}
       {message.type === "moveToCoder" && (
-        <div className="flex gap-2 p-4">
+        <div className="flex gap-2 p-4 ml-8">
           <Button
             variant="default"
-            className="w-[100px]"
+            className="w-[100px] bg-success"
             onClick={() => {
               chatWorkflow.mutate(
                 {
@@ -273,7 +273,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </Button>
           <Button
             variant="destructive"
-            className="w-[100px]"
+            className="w-[100px] bg-error"
             onClick={() => {
               chatWorkflow.mutate({
                 message: JSON.stringify({ role: "user", content: "No", type: "text" }),
@@ -437,7 +437,7 @@ export default function ChatInterface() {
     handleFirstLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  const isPending = chatWorkflow.isPending || initiateWorkflow.isPending;
   return (
     <div className="container mx-auto max-w-4xl">
       <Card className="h-full flex flex-col">
@@ -445,6 +445,9 @@ export default function ChatInterface() {
           {messages.map((message, index) => (
             <MessageRenderer key={index} message={message} />
           ))}
+          {isPending && (
+            <MessageRenderer key="loading" message={{ type: "text", content: "Loading...", role: "bot" }} />
+          )}
         </ScrollArea>
         <CardContent>
           <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
@@ -472,7 +475,7 @@ export default function ChatInterface() {
               className="flex-grow p-2"
             />
             <Button className="p-2" type="submit" disabled={chatWorkflow.isPending}>
-              <SendHorizonalIcon size={24} />
+              {chatWorkflow.isPending ? <LoaderIcon size={24} /> : <SendHorizonalIcon size={24} />}
             </Button>
           </form>
           {files.length > 0 && (

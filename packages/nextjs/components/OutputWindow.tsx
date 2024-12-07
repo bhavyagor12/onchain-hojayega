@@ -44,15 +44,15 @@ const OutputWindow = () => {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Output Window</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="gap-4">
         <div>
           {codeSolidity && (
-            <div className="h-[70vh] mb-4">
-              <h3 className="font-semibold text-lg mb-2">
+            <div className="h-[70vh] mb-[3rem]">
+              <h3 className="font-semibold text-lg mb-2 flex items-center">
                 Solidity Code
                 <CopyToClipboard text={codeSolidity} onCopy={() => toast("Copied to clipboard")}>
                   <Button variant="outline" size="icon" className="btn-ghost">
-                    <Copy className="h-4 w-4" />
+                    <Copy className="h-4 w-4 ml-4" />
                   </Button>
                 </CopyToClipboard>
               </h3>
