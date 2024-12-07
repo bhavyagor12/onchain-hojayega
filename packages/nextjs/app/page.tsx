@@ -1,25 +1,11 @@
 "use client";
 
 import type { NextPage } from "next";
-import { Wallet } from "okto-sdk-react";
 import AgentCard from "~~/components/Agent";
 import Hero from "~~/components/Hero";
 import { ProblemInput } from "~~/components/ProblemInput";
 
 const agents = [
-  {
-    name: "Sofia",
-    role: "Research Analyst",
-    image: "/sofia.png",
-    prompt:
-      "I am as nerdy as it gets, I can research anything and everything. I am Sofia, focusing on helping you with your research needs.",
-    skills: [
-      { name: "NFTs", color: "blue" },
-      { name: "Tokenization", color: "purple" },
-      { name: "UI/UX", color: "pink" },
-      { name: "Marketing", color: "green" },
-    ],
-  },
   {
     name: "Logan",
     role: "System Architect",
@@ -31,6 +17,19 @@ const agents = [
       { name: "Backend", color: "purple" },
       { name: "Database", color: "pink" },
       { name: "DevOps", color: "green" },
+    ],
+  },
+  {
+    name: "Sofia",
+    role: "Research Analyst",
+    image: "/sofia.png",
+    prompt:
+      "I am as nerdy as it gets, I can research anything and everything. I am Sofia, focusing on helping you with your research needs.",
+    skills: [
+      { name: "NFTs", color: "blue" },
+      { name: "Tokenization", color: "purple" },
+      { name: "UI/UX", color: "pink" },
+      { name: "Marketing", color: "green" },
     ],
   },
   {

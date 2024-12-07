@@ -11,6 +11,7 @@ import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
+import { ProvideAgent } from "~~/providers/AgenticProvider";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
@@ -48,13 +49,15 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
       <GoogleOAuthProvider clientId={"657003020885-j3tf590vhjblp7vl4mkglb1q6lkltoj6.apps.googleusercontent.com"}>
         <OktoProvider apiKey={"8398e1a6-ffd8-4a0c-8c6f-3153f6d2f75e"} buildType={BuildType.SANDBOX}>
           <QueryClientProvider client={queryClient}>
-            <ProgressBar height="3px" color="#2299dd" />
-            <RainbowKitProvider
-              avatar={BlockieAvatar}
-              theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
-            >
-              <ScaffoldEthApp>{children}</ScaffoldEthApp>
-            </RainbowKitProvider>
+            <ProvideAgent>
+              <ProgressBar height="3px" color="#2299dd" />
+              <RainbowKitProvider
+                avatar={BlockieAvatar}
+                theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+              >
+                <ScaffoldEthApp>{children}</ScaffoldEthApp>
+              </RainbowKitProvider>
+            </ProvideAgent>
           </QueryClientProvider>
         </OktoProvider>
       </GoogleOAuthProvider>
