@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Options } from "./Options";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { Bot, ChartNetwork, GlobeIcon, LoaderIcon, Paperclip, SendHorizonalIcon, User } from "lucide-react";
+import { Bot, GlobeIcon, LoaderIcon, Paperclip, SendHorizonalIcon, User } from "lucide-react";
+import ReactLoading from "react-loading";
 import { FASTAPI_URL } from "~~/constants";
 import { useAgent } from "~~/providers/AgenticProvider";
 import { Avatar, AvatarFallback } from "~~/shadcn/components/ui/avatar";
@@ -101,6 +101,8 @@ const MessageRenderer = ({ message }: { message: any }) => {
             <p className="text-foreground">{message.content}</p>
           </div>
         );
+      case "loading":
+        return <ReactLoading type={"bars"} height={"20%"} width={"20%"} />;
       default:
         return null;
     }
@@ -148,10 +150,10 @@ const MessageRenderer = ({ message }: { message: any }) => {
         </div>
       </div>
       {message.type === "moveToResearcher" && (
-        <div className="flex gap-2 mt-2 ml-12">
+        <div className="flex flex-row-reverse items-end gap-2 mt-2 ml-12">
           <Button
             variant="default"
-            className="w-[100px] bg-success"
+            className="w-[100px] bg-success text-white p-2"
             onClick={() => {
               chatWorkflow.mutate(
                 {
@@ -194,7 +196,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </Button>
           <Button
             variant="destructive"
-            className="w-[100px] bg-error"
+            className="w-[100px] bg-error text-white p-2"
             onClick={() => {
               chatWorkflow.mutate(
                 {
@@ -215,10 +217,10 @@ const MessageRenderer = ({ message }: { message: any }) => {
         </div>
       )}
       {message.type === "moveToCoder" && (
-        <div className="flex gap-2 p-4 ml-8">
+        <div className="flex flex-row-reverse gap-2 p-4 ml-8">
           <Button
             variant="default"
-            className="w-[100px] bg-success"
+            className="w-[100px] bg-success text-white p-2"
             onClick={() => {
               chatWorkflow.mutate(
                 {
@@ -273,7 +275,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </Button>
           <Button
             variant="destructive"
-            className="w-[100px] bg-error"
+            className="w-[100px] bg-error text-white p-2"
             onClick={() => {
               chatWorkflow.mutate({
                 message: JSON.stringify({ role: "user", content: "No", type: "text" }),
@@ -287,7 +289,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
         </div>
       )}
       {message.type === "options" && (
-        <div className="flex p-4">
+        <div className="flex ml-8 mt-2 p-2">
           <Options options={options} />
         </div>
       )}
@@ -439,14 +441,22 @@ export default function ChatInterface() {
   }, []);
   const isPending = chatWorkflow.isPending || initiateWorkflow.isPending;
   return (
-    <div className="container mx-auto max-w-4xl">
+    <div
+      className="container mx-auto max-w-4xl"
+      style={{
+        backgroundImage: `url('/chatBg.svg')`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <Card className="h-full flex flex-col">
         <ScrollArea className="h-[90vh] p-4 overflow-scroll">
           {messages.map((message, index) => (
             <MessageRenderer key={index} message={message} />
           ))}
           {isPending && (
-            <MessageRenderer key="loading" message={{ type: "text", content: "Loading...", role: "bot" }} />
+            <MessageRenderer key="loading" message={{ type: "loading", content: "Loading...", role: "bot" }} />
           )}
         </ScrollArea>
         <CardContent>

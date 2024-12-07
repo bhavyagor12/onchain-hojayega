@@ -3,11 +3,11 @@ import PlanOutput from "./PlanShowcase";
 import Editor from "@monaco-editor/react";
 import { Copy, Maximize2 } from "lucide-react";
 import { Mermaid } from "mdx-mermaid/Mermaid";
+import CopyToClipboard from "react-copy-to-clipboard";
+import toast from "react-hot-toast";
 import { useAgent } from "~~/providers/AgenticProvider";
 import { Button } from "~~/shadcn/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~~/shadcn/components/ui/card";
-import CopyToClipboard from "react-copy-to-clipboard";
-import toast from "react-hot-toast";
 
 const OutputWindow = () => {
   const { state, alteredMermaid, plan, codeSolidity } = useAgent();
@@ -40,7 +40,15 @@ const OutputWindow = () => {
   };
 
   return (
-    <Card className="h-[100vh] overflow-scroll">
+    <Card
+      className="h-[100vh] overflow-scroll"
+      style={{
+        backgroundImage: `url('/chatBg.svg')`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "right center", // Flip horizontally by adjusting position
+      }}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Output Window</CardTitle>
       </CardHeader>
