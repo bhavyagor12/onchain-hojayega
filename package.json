@@ -32,8 +32,7 @@
     "test": "yarn hardhat:test",
     "vercel": "yarn workspace @se-2/nextjs vercel",
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "verify": "yarn workspace @se-2/hardhat verify",
-    "fastapi": "fastapi dev packages/fastapi/main.py"
+    "verify": "yarn workspace @se-2/hardhat verify"
   },
   "devDependencies": {
     "husky": "~8.0.3",

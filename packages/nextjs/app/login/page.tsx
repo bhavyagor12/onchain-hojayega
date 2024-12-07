@@ -5,7 +5,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { OktoContextType, useOkto } from "okto-sdk-react";
 
 function LoginPage() {
-  const { authenticate } = useOkto() as OktoContextType;
+  const { authenticate, getWallets } = useOkto() as OktoContextType;
   const [authToken, setAuthToken] = useState(null);
 
   const handleGoogleLogin = async (credentialResponse: any) => {
@@ -18,6 +18,7 @@ function LoginPage() {
         console.error("Authentication error:", error);
       }
     });
+    const wallets = await getWallets();
   };
 
   return (
