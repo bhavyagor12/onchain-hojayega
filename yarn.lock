@@ -755,6 +755,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@excalidraw/excalidraw@npm:^0.17.6":
+  version: 0.17.6
+  resolution: "@excalidraw/excalidraw@npm:0.17.6"
+  peerDependencies:
+    react: ^17.0.2 || ^18.2.0
+    react-dom: ^17.0.2 || ^18.2.0
+  checksum: 4d7fa415f45d2858bdef3e5c89d984bf233d63d8244acd8f5ebcae9d193107a6e4691d671887781a5b5bc5b79f3d1270584e0dd43e6edef913bebac8b72f6634
+  languageName: node
+  linkType: hard
+
 "@fastify/busboy@npm:^2.0.0":
   version: 2.1.1
   resolution: "@fastify/busboy@npm:2.1.1"
@@ -2190,6 +2200,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@se-2/nextjs@workspace:packages/nextjs"
   dependencies:
+    "@excalidraw/excalidraw": ^0.17.6
     "@heroicons/react": ~2.1.5
     "@radix-ui/react-slot": ^1.1.0
     "@rainbow-me/rainbowkit": 2.1.6
