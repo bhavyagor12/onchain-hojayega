@@ -3,7 +3,6 @@
 import type { NextPage } from "next";
 import AgentCard from "~~/components/Agent";
 import Hero from "~~/components/Hero";
-import { ProblemInput } from "~~/components/ProblemInput";
 
 const agents = [
   {
@@ -52,9 +51,6 @@ const Home: NextPage = () => {
     <div className="snap-y snap-mandatory overflow-y-scroll h-screen">
       <section className="snap-start w-full h-screen bg-gradient-to-b from-background to-muted flex flex-col items-center justify-center text-center">
         <Hero />
-        <div className="mt-6">
-          <ProblemInput />
-        </div>
       </section>
       <section className="snap-start w-full h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-background to-muted">
         <h2 className="text-2xl font-semibold text-gray-800 text-center mb-8">Your Onchain Team</h2>
