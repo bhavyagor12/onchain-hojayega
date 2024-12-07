@@ -5,10 +5,7 @@ from dotenv import load_dotenv
 from routes.workflow_routes import router as workflow_router
 import os
 
-dotenv_path = os.path.join(os.path.dirname(__file__), 'packages/fastapi/.env')
-print(dotenv_path)
-
-load_dotenv(dotenv_path=dotenv_path)
+load_dotenv(override=True)
 
 app = FastAPI()
 
@@ -20,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-start_time = time.time()\
+start_time = time.time()
     
 app.include_router(workflow_router, prefix="/workflow", tags=["Workflow"])
 

@@ -1,19 +1,17 @@
-import json
 from typing import Optional, Type, Dict, Union
-from agents.utils.helpers import is_json
-from agents.constants.ai_models import grokclient
 from fastapi import HTTPException
 from agents.workflows.index import WorkflowInterface
+from langgraph.checkpoint.memory import MemorySaver
+from fastapi import HTTPException
+from agents.workflows.analyst.index import AnalystWorkflow
 
 class WorkflowOrchestrator:
     def __init__(self):
-        # Set up database connection and checkpointer
-        self.connection_kwargs = {
-            "autocommit": True,
-            "prepare_threshold": 0,
-        }
+        self.checkpointer = MemorySaver()
+        self.AnalystWorkflow = AnalystWorkflow(self.checkpointer)
         # Mapping of workflows to initialization functions
         self.agents: Dict[str, Type[WorkflowInterface]] = {
+            "analyst": self.AnalystWorkflow,
         }
 
     def start(self, workflow_name: str, message: Optional[Union[dict, str]] = None):

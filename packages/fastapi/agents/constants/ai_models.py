@@ -1,9 +1,14 @@
-from langchain_openai import ChatOpenAI
 import os
+from langchain_openai import ChatOpenAI
 
-XAI_API_KEY = "xai-7jKdO6jExdsL4AGdmLINapDeUQh7J8hHzNmU9831Jo65YpM2hYAdfRmfeOF2EAcWS7pHAXcZjggRpKeK"
 
-grokclient = ChatOpenAI(
-    api_key=XAI_API_KEY,
-    base_url="https://api.x.ai/v1",
+chat_json = ChatOpenAI(
+    api_key = os.getenv("OPENAI_API_KEY"),
+    model="gpt-4o",
+    max_tokens=8000,
+    model_kwargs={
+        "response_format": {"type": "json_object"}
+    }
 )
+
+

@@ -1,5 +1,5 @@
 from langchain_core.messages import SystemMessage, HumanMessage
-from agents.constants.ai_models import grokclient
+from agents.constants.ai_models import chat_json
 from fastapi import HTTPException
 import replicate
 import json
@@ -41,7 +41,7 @@ def generate_image_for_product(
                     SystemMessage(content=prompt),
                     HumanMessage(content=f"Product: {productName} Card Context: {card}"),
                 ]
-                response = grokclient.invoke(messages)
+                response = chat_json.invoke(messages)
                 if not response or not response.content:
                     raise ValueError("Failed to extract promotion details from response.")
                 final_image_prompt = json.loads(response.content).get("prompt")
