@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { SendIcon } from "lucide-react";
+import { SendHorizonalIcon, SendIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "~~/shadcn/components/ui/avatar";
 import { Button } from "~~/shadcn/components/ui/button";
 import { Card, CardContent } from "~~/shadcn/components/ui/card";
@@ -92,7 +92,7 @@ export default function ChatInterface() {
               className="flex-grow p-2"
             />
             <Button className="p-2" type="submit">
-              <SendIcon size={24} />
+              <SendHorizonalIcon size={24} />
             </Button>
           </form>
           {files.length > 0 && (
