@@ -29,7 +29,7 @@ export default function AgentCard({ name, role, image, prompt, skills }: AgentCa
 
   return (
     <Card className="w-full max-w-md p-6 space-y-6">
-      <h2 className="text-2xl font-bold text-indigo-900">
+      <h2 className="text-xl font-bold text-indigo-900">
         {name} - {role}
       </h2>
       <div className="bg-muted rounded-lg p-2 flex flex-col items-center">

@@ -19,11 +19,11 @@ const agents = [
     ],
   },
   {
-    name: "Sofia",
+    name: "Rhea",
     role: "Research Analyst",
-    image: "/sofia.png",
+    image: "/rhea.png",
     prompt:
-      "I am as nerdy as it gets, I can research anything and everything. I am Sofia, focusing on helping you with your research needs.",
+      "I am as nerdy as it gets, I can research anything and everything. I am Rhea, focusing on helping you with your research needs.",
     skills: [
       { name: "NFTs", color: "blue" },
       { name: "Tokenization", color: "purple" },
@@ -32,11 +32,11 @@ const agents = [
     ],
   },
   {
-    name: "Rhea",
+    name: "Kanye",
     role: "Smart Contract Developer",
-    image: "/rhea.png",
+    image: "/kanye.png",
     prompt:
-      "I am a cracked smart contract developer that can work 24/7. I am Rhea, focusing on helping you with your smart contract needs.",
+      "I am a cracked smart contract developer that can work 24/7. Yo call me Kanye, Ill focusing on helping you with your smart contract needs.",
     skills: [
       { name: "Tokenization", color: "blue" },
       { name: "NFTs", color: "purple" },
