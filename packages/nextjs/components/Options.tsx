@@ -1,16 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "~~/shadcn/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "~~/shadcn/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~~/shadcn/components/ui/dialog";
+import { mergeUniqueMessages } from "./ChatInterface";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { FASTAPI_URL } from "~~/constants";
+import { useAgent } from "~~/providers/AgenticProvider";
 
 type Option = {
   usecase: string;
@@ -22,73 +17,110 @@ type Option = {
 };
 
 export function Options({ options }: { options: Option[] }) {
+  const { threadId, messages, setMessages, setAlteredMermaid, setOutputToCoder } = useAgent();
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-
-  const handleCardClick = (option: Option) => {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const handleCardClick = (option: Option, index: number) => {
     setSelectedOption(option);
+    setSelectedIndex(index);
   };
 
   const handleCloseModal = () => {
     setSelectedOption(null);
   };
 
-  const handleProceed = () => {
-    console.log("Proceeding with:", selectedOption?.usecase);
-    handleCloseModal();
+  const handleProceed = async () => {
+    if (!selectedOption) return;
+    chatWorkflow.mutate(
+      {
+        message: JSON.stringify({ role: "user", content: selectedIndex?.toString(), type: "text" }),
+        workflow: "researcher",
+        threadId,
+      },
+      {
+        onSuccess: data => {
+          setMessages(mergeUniqueMessages(messages, data.state.messages));
+          setAlteredMermaid(data.state.altered_mermaid);
+          setOutputToCoder(data.state.output);
+          handleCloseModal();
+        },
+        onError: e => {
+          console.error(e);
+        },
+      },
+    );
   };
-
+  const chatWorkflow = useMutation({
+    mutationFn: async ({
+      message,
+      file,
+      workflow,
+      threadId,
+    }: {
+      message: any;
+      file?: File;
+      workflow: string;
+      threadId: string;
+    }) => {
+      const formData = new FormData();
+      formData.append("message", JSON.stringify(message));
+      if (file) formData.append("file", file);
+      const response = await axios.post(`${FASTAPI_URL}/workflow/${workflow}/${threadId}`, formData);
+      return response.data;
+    },
+  });
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Ride Share Innovation Options</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="container mx-auto">
+      <div className="grid grid-cols-2 gap-4 items-center">
         {options.map((option, index) => (
-          <Card
+          <div
             key={index}
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => handleCardClick(option)}
+            className="card p-2 bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => handleCardClick(option, index)}
           >
-            <CardHeader>
-              <CardTitle>{option.usecase}</CardTitle>
-              <CardDescription>{option.technology_name}</CardDescription>
-            </CardHeader>
-          </Card>
+            <div className="card-body p-1 gap-0">
+              <h2 className="text-xs font-semibold">{option.usecase}</h2>
+              <p className="text-xs text-gray-500">{option.technology_name}</p>
+            </div>
+          </div>
         ))}
       </div>
+      {selectedOption && (
+        <div className={`modal modal-open`} onClick={handleCloseModal}>
+          <div className="modal-box max-w-xs bg-base-200 p-4 rounded-md shadow-lg" onClick={e => e.stopPropagation()}>
+            <h3 className="font-bold text-base mb-2">{selectedOption.usecase}</h3>
+            <p className="text-sm text-gray-400 mb-4">{selectedOption.description}</p>
 
-      <Dialog open={!!selectedOption} onOpenChange={handleCloseModal}>
-        {selectedOption && (
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>{selectedOption.usecase}</DialogTitle>
-              <DialogDescription>{selectedOption.description}</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="space-y-2 text-sm">
               <div>
-                <h4 className="font-medium mb-2">Technology:</h4>
+                <h4 className="font-semibold">Technology:</h4>
                 <p>{selectedOption.technology_name}</p>
               </div>
               <div>
-                <h4 className="font-medium mb-2">Department to Improve:</h4>
+                <h4 className="font-semibold">Department to Improve:</h4>
                 <p>{selectedOption.department_it_will_improve}</p>
               </div>
               <div>
-                <h4 className="font-medium mb-2">How to Integrate:</h4>
+                <h4 className="font-semibold">How to Integrate:</h4>
                 <p>{selectedOption.how_to_integrate}</p>
               </div>
               <div>
-                <h4 className="font-medium mb-2">Companies Using Similar Approach:</h4>
+                <h4 className="font-semibold">Companies Using Similar Approach:</h4>
                 <p>{selectedOption.companies.join(", ")}</p>
               </div>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={handleCloseModal}>
+
+            <div className="modal-action mt-4">
+              <button className="btn btn-sm btn-outline" onClick={handleCloseModal}>
                 Exit
-              </Button>
-              <Button onClick={handleProceed}>Proceed</Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
+              </button>
+              <button className="btn btn-sm btn-primary" onClick={handleProceed}>
+                Proceed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -14,8 +14,8 @@
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true"
   },
   "dependencies": {
-    "@excalidraw/excalidraw": "^0.17.6",
     "@heroicons/react": "~2.1.5",
+    "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-scroll-area": "^1.2.1",

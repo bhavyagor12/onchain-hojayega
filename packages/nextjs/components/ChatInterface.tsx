@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Options } from "./Options";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { Bot, Paperclip, PenTool, SendHorizonalIcon } from "lucide-react";
+import { Bot, GlobeIcon, Paperclip, SendHorizonalIcon } from "lucide-react";
 import { FASTAPI_URL } from "~~/constants";
 import { useAgent } from "~~/providers/AgenticProvider";
 import { Avatar, AvatarFallback } from "~~/shadcn/components/ui/avatar";
@@ -14,13 +14,25 @@ import { Card, CardContent } from "~~/shadcn/components/ui/card";
 import { Input } from "~~/shadcn/components/ui/input";
 import { ScrollArea } from "~~/shadcn/components/ui/scroll-area";
 
-const mergeUniqueMessages = (existingMessages: any[], newMessages: any[]) => {
-  const messageSet = new Set(existingMessages.map(msg => JSON.stringify(msg))); // Serialize for comparison
-  newMessages.forEach(msg => messageSet.add(JSON.stringify(msg)));
-  return Array.from(messageSet).map(msg => JSON.parse(msg)); // Deserialize back
+export const mergeUniqueMessages = (existingMessages: any[], newMessages: any[]) => {
+  const serializeWithoutId = (msg: any) => {
+    const { id, ...rest } = msg; // Exclude the `id` property
+    return JSON.stringify(rest);
+  };
+
+  const messageSet = new Set(existingMessages.map(serializeWithoutId));
+  newMessages.forEach(msg => messageSet.add(serializeWithoutId(msg)));
+
+  return Array.from(messageSet).map(serialized => {
+    const parsed = JSON.parse(serialized);
+    const match = [...existingMessages, ...newMessages].find(msg => serializeWithoutId(msg) === serialized);
+    return { ...parsed, id: match?.id }; // Optionally restore the `id`
+  });
 };
+
 const MessageRenderer = ({ message }: { message: any }) => {
-  const { messages, setMessages, threadId, setThreadId, state, setOptions, options } = useAgent();
+  const { messages, setMessages, threadId, setThreadId, state, setOptions, options, outputToCoder, setPlan } =
+    useAgent();
   const initiateWorkflow = useMutation({
     mutationFn: async (workflowName: string) => {
       const response = await axios.post(`${FASTAPI_URL}/workflow/${workflowName}`);
@@ -61,7 +73,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
       case "tool":
         return (
           <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
-            <PenTool className="h-4 w-4" />
+            <GlobeIcon className="h-4 w-4" />
             <p>{message.content}</p>
           </div>
         );
@@ -72,6 +84,18 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </div>
         );
       case "moveToResearcher":
+        return (
+          <div className="flex flex-col gap-2">
+            <p className="text-foreground">{message.content}</p>
+          </div>
+        );
+      case "moveToCoder":
+        return (
+          <div className="flex flex-col gap-2">
+            <p className="text-foreground">{message.content}</p>
+          </div>
+        );
+      case "options":
         return (
           <div className="flex flex-col gap-2">
             <p className="text-foreground">{message.content}</p>
@@ -107,13 +131,13 @@ const MessageRenderer = ({ message }: { message: any }) => {
   }
   return (
     <div key={message.id} className={`flex flex-col mb-6 ${message.role === "user" ? "items-end" : "items-start"}`}>
-      <div className={`flex gap-3 items-start max-w-[80%]`}>
+      <div className={`flex gap-3 items-center max-w-[80%]`}>
         <Avatar className="w-8 h-8">
           <AvatarFallback className="bg-primary text-primary-foreground">
             {getAvatarContent(message.role)}
           </AvatarFallback>
         </Avatar>
-        <div className={`rounded-lg p-4 ${getMessageBackground(message.type)}`}>
+        <div className={`rounded-3xl px-2 py-1 ${getMessageBackground(message.type)}`}>
           {messageTypeRenderer(message)}
           {message.experimental_attachments?.map((attachment: any, index: number) => (
             <div key={index} className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
@@ -191,27 +215,47 @@ const MessageRenderer = ({ message }: { message: any }) => {
         </div>
       )}
       {message.type === "moveToCoder" && (
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2 p-4">
           <Button
             variant="default"
             className="w-[100px]"
             onClick={() => {
               chatWorkflow.mutate(
                 {
-                  message: JSON.stringify({ role: "user", content: "Yes", type: "text" }),
+                  message: JSON.stringify({
+                    role: "user",
+                    content: "Yes",
+                    type: "text",
+                    additional_kwargs: {},
+                    response_metadata: {},
+                    name: null,
+                    file: "",
+                  }),
                   workflow: "researcher",
                   threadId,
                 },
                 {
                   onSuccess: data => {
-                    console.log(data);
-                    initiateWorkflow.mutate("researcher", {
+                    initiateWorkflow.mutate("coder", {
                       onSuccess: data => {
-                        chatWorkflow.mutate({
-                          message: JSON.stringify({ role: "user", content: state?.mermaid_diagram, type: "text" }),
-                          workflow: "coder",
-                          threadId: data.threadId,
-                        });
+                        chatWorkflow.mutate(
+                          {
+                            message: JSON.stringify({
+                              role: "user",
+                              content: JSON.stringify(outputToCoder),
+                              type: "default",
+                            }),
+                            workflow: "coder",
+                            threadId: data.threadId,
+                          },
+                          {
+                            onSuccess: data => {
+                              console.log(data, "plan");
+                              setMessages(mergeUniqueMessages(messages, data.state.messages));
+                              setPlan(data.state.plan);
+                            },
+                          },
+                        );
                       },
                       onError: error => {
                         console.error("Mutation failed:", error);
@@ -242,8 +286,8 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </Button>
         </div>
       )}
-      {options && (
-        <div className="flex flex-col gap-2 mt-2">
+      {message.type === "options" && (
+        <div className="flex p-4">
           <Options options={options} />
         </div>
       )}
@@ -252,7 +296,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
 };
 
 export default function ChatInterface() {
-  const { messages, setMessages, threadId, setThreadId, setState } = useAgent();
+  const { messages, setMessages, threadId, setThreadId, setState, plan, setCodeSolidity, setPlan } = useAgent();
   const [input, setInput] = useState("");
 
   const [files, setFiles] = useState<File[]>([]);
@@ -267,6 +311,72 @@ export default function ChatInterface() {
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFiles([]); // Clear files after sending
+    if (plan && plan?.goal !== "") {
+      if (input === "continue") {
+        chatWorkflow.mutate(
+          {
+            message: JSON.stringify({ role: "user", content: input, type: "text" }),
+            workflow: "coder",
+            threadId,
+          },
+          {
+            onSuccess: data => {
+              setMessages(mergeUniqueMessages(messages, data.state.messages));
+              setCodeSolidity(data.state.generated_code);
+            },
+          },
+        );
+      } else {
+        setMessages(
+          mergeUniqueMessages(messages, [
+            {
+              content: input,
+              additional_kwargs: {},
+              response_metadata: {},
+              type: "text",
+              name: null,
+              role: "user",
+              file: "",
+            },
+          ]),
+        );
+        chatWorkflow.mutate(
+          {
+            message: JSON.stringify({
+              content: input,
+              additional_kwargs: {},
+              response_metadata: {},
+              type: "text",
+              name: null,
+              role: "user",
+              file: "",
+            }),
+            workflow: "coder",
+            threadId,
+          },
+          {
+            onSuccess: data => {
+              setMessages(mergeUniqueMessages(messages, data.state.messages));
+              setPlan(data.state.plan);
+            },
+          },
+        );
+      }
+      return;
+    }
+    setMessages(
+      mergeUniqueMessages(messages, [
+        {
+          content: input,
+          additional_kwargs: {},
+          response_metadata: {},
+          type: "text",
+          name: null,
+          role: "user",
+          file: "",
+        },
+      ]),
+    );
     if (fileInputRef.current) {
       fileInputRef.current.value = ""; // Reset file input
     }
@@ -320,6 +430,7 @@ export default function ChatInterface() {
     if (!data) return;
     setThreadId(data.threadId);
     setMessages([...data.state.messages]);
+    setPlan(undefined);
   };
 
   useEffect(() => {
@@ -355,11 +466,12 @@ export default function ChatInterface() {
             </Button>
             <Input
               value={input}
+              disabled={chatWorkflow.isPending}
               onChange={e => setInput(e.target.value)}
               placeholder="Type your message..."
               className="flex-grow p-2"
             />
-            <Button className="p-2" type="submit">
+            <Button className="p-2" type="submit" disabled={chatWorkflow.isPending}>
               <SendHorizonalIcon size={24} />
             </Button>
           </form>

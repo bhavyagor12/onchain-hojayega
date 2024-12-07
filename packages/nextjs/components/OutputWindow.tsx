@@ -1,38 +1,107 @@
 import { useState } from "react";
-import { Maximize2 } from "lucide-react";
+import PlanOutput from "./PlanShowcase";
+import Editor from "@monaco-editor/react";
+import { Copy, Maximize2 } from "lucide-react";
 import { Mermaid } from "mdx-mermaid/Mermaid";
 import { useAgent } from "~~/providers/AgenticProvider";
 import { Button } from "~~/shadcn/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~~/shadcn/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~~/shadcn/components/ui/dialog";
+import CopyToClipboard from "react-copy-to-clipboard";
+import toast from "react-hot-toast";
 
 const OutputWindow = () => {
-  const { state } = useAgent();
-  const [isOpen, setIsOpen] = useState(false);
+  const { state, alteredMermaid, plan, codeSolidity } = useAgent();
+  const [isStateOpen, setIsStateOpen] = useState(false);
+  const [isAlteredOpen, setIsAlteredOpen] = useState(false);
+
+  const renderMermaidModal = (
+    diagram: string | undefined,
+    isOpen: boolean,
+    setIsOpen: (open: boolean) => void,
+    title: string,
+  ) => {
+    if (!diagram) return null;
+
+    return (
+      <div className={`modal ${isOpen ? "modal-open" : ""}`} onClick={() => setIsOpen(false)}>
+        <div className="modal-box w-full max-w-5xl max-h-[90vh] h-full bg-base-200" onClick={e => e.stopPropagation()}>
+          <h3 className="font-bold text-lg mb-4">Enlarged Diagram - {title}</h3>
+          <div className="w-full h-full overflow-auto">
+            <Mermaid chart={diagram} />
+          </div>
+          <div className="modal-action">
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <Card className="flex-1">
+    <Card className="h-[100vh] overflow-scroll">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Output Window</CardTitle>
-        {state?.mermaid_diagram && (
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Maximize2 className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[90vw] w-full max-h-[90vh] h-full">
-              <DialogHeader>
-                <DialogTitle>Enlarged Diagram</DialogTitle>
-              </DialogHeader>
-              <div className="w-full h-full overflow-auto">
-                <Mermaid chart={state.mermaid_diagram} />
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
       </CardHeader>
-      <CardContent>{state?.mermaid_diagram && <Mermaid chart={state.mermaid_diagram} />}</CardContent>
+      <CardContent>
+        <div>
+          {codeSolidity && (
+            <div className="h-[70vh] mb-4">
+              <h3 className="font-semibold text-lg mb-2">
+                Solidity Code
+                <CopyToClipboard text={codeSolidity} onCopy={() => toast("Copied to clipboard")}>
+                  <Button variant="outline" size="icon" className="btn-ghost">
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </CopyToClipboard>
+              </h3>
+              <Editor
+                height="70vh"
+                defaultLanguage="solidity"
+                theme="vs-dark"
+                defaultValue={codeSolidity}
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  lineNumbers: "on",
+                  fontSize: 12,
+                  wordWrap: "on",
+                }}
+              />
+            </div>
+          )}
+          {plan && <PlanOutput {...plan} />}
+          {alteredMermaid && alteredMermaid !== state?.mermaid_diagram && (
+            <>
+              <div>
+                <div className="divider my-4" />
+                <div className="flex items-center gap-4">
+                  <h3 className="font-semibold text-lg mb-2">After Alteration</h3>
+                  <Button variant="outline" size="icon" onClick={() => setIsAlteredOpen(true)} className="btn-ghost">
+                    <Maximize2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Mermaid chart={alteredMermaid} />
+              </div>
+            </>
+          )}
+          {state?.mermaid_diagram && (
+            <div className="mb-4">
+              <div className="divider my-4" />
+              <div className="flex items-center gap-4">
+                <h3 className="font-semibold text-lg mb-2">Before Alteration</h3>
+                <Button variant="outline" size="icon" onClick={() => setIsStateOpen(true)} className="btn-ghost">
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Mermaid chart={state.mermaid_diagram} />
+            </div>
+          )}
+        </div>
+      </CardContent>
+      {renderMermaidModal(alteredMermaid, isAlteredOpen, setIsAlteredOpen, "After")}
+      {renderMermaidModal(state?.mermaid_diagram, isStateOpen, setIsStateOpen, "Before")}
     </Card>
   );
 };

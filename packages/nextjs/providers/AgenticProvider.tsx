@@ -3,6 +3,7 @@
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { IPlanOutput } from "~~/components/PlanShowcase";
 import { FASTAPI_URL } from "~~/constants";
 
 interface IAgentContext {
@@ -15,6 +16,14 @@ interface IAgentContext {
   initiateWorkflow: any;
   options: any;
   setOptions: (options: any) => void;
+  alteredMermaid: any;
+  setAlteredMermaid: (alteredMermaid: any) => void;
+  outputToCoder: any;
+  setOutputToCoder: (outputToCoder: any) => void;
+  plan: IPlanOutput;
+  setPlan: (plan: IPlanOutput | undefined) => void;
+  codeSolidity: any;
+  setCodeSolidity: (codeSolidity: any) => void;
 }
 
 const AgentContext = createContext<IAgentContext | null>(null);
@@ -23,6 +32,10 @@ const useAgentContext = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [state, setState] = useState<any>({});
   const [options, setOptions] = useState<any>();
+  const [alteredMermaid, setAlteredMermaid] = useState<any>();
+  const [outputToCoder, setOutputToCoder] = useState<any>();
+  const [plan, setPlan] = useState<IPlanOutput>();
+  const [codeSolidity, setCodeSolidity] = useState<any>();
   const initiateWorkflow = useMutation({
     mutationFn: async (workflowName: string) => {
       const response = await axios.post(`${FASTAPI_URL}/workflow/${workflowName}`);
@@ -48,6 +61,14 @@ const useAgentContext = () => {
     initiateWorkflow,
     options,
     setOptions,
+    alteredMermaid,
+    setAlteredMermaid,
+    outputToCoder,
+    setOutputToCoder,
+    plan,
+    setPlan,
+    codeSolidity,
+    setCodeSolidity,
   };
 };
 
