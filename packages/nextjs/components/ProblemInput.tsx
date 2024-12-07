@@ -16,7 +16,6 @@ export function ProblemInput() {
 
     setIsLoading(true);
     try {
-      // Handle submission logic here
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       console.log("Submitted:", input);
     } finally {
@@ -39,7 +38,7 @@ export function ProblemInput() {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto bg-white/50 backdrop-blur-sm border-0 shadow-lg">
+    <Card className="w-full max-w-3xl mx-auto bg-muted backdrop-blur-sm border-0 shadow-lg">
       <CardContent className="p-4 space-y-2">
         <div className="space-y-4 flex flex-col items-center text-center">
           <Bot className="h-16 w-16 text-primary animate-pulse" />

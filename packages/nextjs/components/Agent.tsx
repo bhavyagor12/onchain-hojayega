@@ -39,7 +39,7 @@ export default function AgentCard({ name, role, image, prompt, skills }: AgentCa
       </div>
 
       <div className="space-y-1">
-        <h3 className="text-xl font-bold text-indigo-900">Agent Prompt</h3>
+        <h3 className="text-xl font-bold text-indigo-900">Agent Introduction</h3>
         <div className="p-4 bg-gray-100 rounded-lg">
           <p className="text-gray-600">{prompt}</p>
         </div>

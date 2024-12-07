@@ -11,7 +11,7 @@ const AgentPlayground = () => {
         <CardTitle>Agent Playground</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[calc(50vh-8rem)] rounded-md border bg-muted/30 p-4">
+        <ScrollArea className="h-[calc(50vh-10rem)] rounded-md border bg-muted/30 p-4">
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Agent workspace and visualization area</div>
           </div>
