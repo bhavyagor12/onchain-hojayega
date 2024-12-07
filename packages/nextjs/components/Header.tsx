@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Address } from "./scaffold-eth";
 import { useQuery } from "@tanstack/react-query";
 import { NewspaperIcon } from "lucide-react";
 import { OktoContextType, useOkto } from "okto-sdk-react";
