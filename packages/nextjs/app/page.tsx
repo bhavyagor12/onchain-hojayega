@@ -49,7 +49,7 @@ const agents = [
 const Home: NextPage = () => {
   return (
     <div
-      className="snap-y snap-mandatory overflow-y-scroll h-screen"
+      className="snap-y snap-mandatory overflow-y-scroll h-screen bg-white"
       style={{
         backgroundImage: "url('/chatBg.svg')",
         backgroundSize: "cover",

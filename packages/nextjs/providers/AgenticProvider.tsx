@@ -24,6 +24,8 @@ interface IAgentContext {
   setPlan: (plan: IPlanOutput | undefined) => void;
   codeSolidity: any;
   setCodeSolidity: (codeSolidity: any) => void;
+  token: any;
+  setToken: (token: any) => void;
 }
 
 const AgentContext = createContext<IAgentContext | null>(null);
@@ -36,6 +38,7 @@ const useAgentContext = () => {
   const [outputToCoder, setOutputToCoder] = useState<any>();
   const [plan, setPlan] = useState<IPlanOutput>();
   const [codeSolidity, setCodeSolidity] = useState<any>();
+  const [token, setToken] = useState<any>();
   const initiateWorkflow = useMutation({
     mutationFn: async (workflowName: string) => {
       const response = await axios.post(`${FASTAPI_URL}/workflow/${workflowName}`);
@@ -69,6 +72,8 @@ const useAgentContext = () => {
     setPlan,
     codeSolidity,
     setCodeSolidity,
+    token,
+    setToken,
   };
 };
 

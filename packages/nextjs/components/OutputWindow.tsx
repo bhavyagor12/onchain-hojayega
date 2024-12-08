@@ -10,7 +10,7 @@ import { Button } from "~~/shadcn/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~~/shadcn/components/ui/card";
 
 const OutputWindow = () => {
-  const { state, alteredMermaid, plan, codeSolidity } = useAgent();
+  const { state, alteredMermaid, plan, codeSolidity, token } = useAgent();
   const [isStateOpen, setIsStateOpen] = useState(false);
   const [isAlteredOpen, setIsAlteredOpen] = useState(false);
 
@@ -54,6 +54,22 @@ const OutputWindow = () => {
       </CardHeader>
       <CardContent className="gap-4">
         <div>
+          {token && (
+            <div className="mb-6 space-y-4">
+              <h3 className="text-lg font-semibold text-primary-700 border-b-2 border-primary-300 pb-2">Token</h3>
+              <div className="p-6 bg-gradient-to-r from-gray-50 via-gray-100 to-gray-200 rounded-lg shadow-lg">
+                <p className="text-gray-800 font-medium">{token.name}</p>
+                <p className="text-gray-600 italic">{token.abbreviation}</p>
+                <a
+                  href={`https://sepolia.basescan.org/address/${token.contract}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <p className="text-gray-600">{token.contract}</p>
+                </a>{" "}
+              </div>
+            </div>
+          )}
           {codeSolidity && (
             <div className="h-[70vh] mb-[3rem]">
               <h3 className="font-semibold text-lg mb-2 flex items-center">

@@ -307,8 +307,19 @@ const MessageRenderer = ({ message }: { message: any }) => {
 };
 
 export default function ChatInterface() {
-  const { messages, setMessages, threadId, setThreadId, setState, plan, setCodeSolidity, setPlan, setAlteredMermaid } =
-    useAgent();
+  const {
+    messages,
+    setMessages,
+    threadId,
+    setThreadId,
+    setState,
+    plan,
+    codeSolidity,
+    setCodeSolidity,
+    setPlan,
+    setAlteredMermaid,
+    setToken,
+  } = useAgent();
   const [input, setInput] = useState("");
 
   const [files, setFiles] = useState<File[]>([]);
@@ -323,6 +334,28 @@ export default function ChatInterface() {
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFiles([]); // Clear files after sending
+    if (codeSolidity) {
+      if (input === "continue") {
+        chatWorkflow.mutate(
+          {
+            message: JSON.stringify({ role: "user", content: input, type: "text" }),
+            workflow: "coder",
+            threadId,
+          },
+          {
+            onSuccess: data => {
+              setMessages(mergeUniqueMessages(messages, data.state.messages));
+              setToken({
+                name: data.state.token_name,
+                abbreviation: data.state.token_abbreviation,
+                contract: data.state.contract_address,
+              });
+            },
+          },
+        );
+        return;
+      }
+    }
     if (plan && plan?.goal !== "") {
       if (input === "continue") {
         chatWorkflow.mutate(
