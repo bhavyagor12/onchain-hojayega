@@ -44,7 +44,7 @@ export default function PlanOutput({
           <h3 className="text-lg font-semibold mb-2">Target Users</h3>
           <div className="flex flex-wrap gap-2">
             {target_users.map((user, index) => (
-              <Badge key={index} className="p-2">
+              <Badge key={index} className="p-2 text-white">
                 {user}
               </Badge>
             ))}
@@ -77,7 +77,7 @@ export default function PlanOutput({
           <div className="grid grid-cols-2 gap-2">
             {logs.map((log, index) => (
               <div key={index} className="flex items-center space-x-2">
-                <Badge variant="outline" className="text-blue-500 border-blue-500 p-2">
+                <Badge variant="outline" className="text-primary border-primary p-2">
                   {log}
                 </Badge>
               </div>

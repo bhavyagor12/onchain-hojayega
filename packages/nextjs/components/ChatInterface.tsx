@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Options } from "./Options";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -72,7 +73,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
         return <p className="text-foreground">{message.content}</p>;
       case "tool":
         return (
-          <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+          <div className="flex items-center gap-2">
             <GlobeIcon className="h-4 w-4" />
             <p>{message.content}</p>
           </div>
@@ -102,7 +103,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
           </div>
         );
       case "loading":
-        return <ReactLoading type={"bars"} height={"20%"} width={"20%"} />;
+        return <ReactLoading type={"bars"} height={"100%"} width={"100%"} />;
       default:
         return null;
     }
@@ -113,7 +114,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
       case "text":
         return "bg-primary/10 dark:bg-primary/20";
       case "tool":
-        return "bg-yellow-100 dark:bg-yellow-900";
+        return "bg-primary/50 text-white";
       case "button":
         return "bg-green-100 dark:bg-green-900";
       default:
@@ -121,11 +122,19 @@ const MessageRenderer = ({ message }: { message: any }) => {
     }
   };
 
-  const getAvatarContent = (role: string) => {
+  const getAvatarContent = (role: string, name: string) => {
     if (role === "user") {
-      return <User className="h-5 w-5" />;
+      return <User className="h-5 w-5 text-white" />;
     } else {
-      return <Bot className="h-5 w-5" />;
+      if (name === "Logan") {
+        return <Image src="/logan.png" alt="logan" width={200} height={200} className="rounded-[50%]" />;
+      }
+      if (name === "Rhea") {
+        return <Image src="/rhea.png" alt="ava" width={200} height={200} className="rounded-[50%]" />;
+      }
+      if (name === "Kanye") {
+        return <Image src="/kanye.png" alt="ava" width={200} height={200} className="rounded-[50%]" />;
+      }
     }
   };
   if (message.type === "default") {
@@ -136,7 +145,7 @@ const MessageRenderer = ({ message }: { message: any }) => {
       <div className={`flex gap-3 items-center max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
         <Avatar className="w-8 h-8">
           <AvatarFallback className="bg-primary text-primary-foreground">
-            {getAvatarContent(message.role)}
+            {getAvatarContent(message.role, message.name)}
           </AvatarFallback>
         </Avatar>
         <div className={`rounded-3xl px-2 min-w-[40px] ${getMessageBackground(message.type)}`}>
@@ -298,7 +307,8 @@ const MessageRenderer = ({ message }: { message: any }) => {
 };
 
 export default function ChatInterface() {
-  const { messages, setMessages, threadId, setThreadId, setState, plan, setCodeSolidity, setPlan } = useAgent();
+  const { messages, setMessages, threadId, setThreadId, setState, plan, setCodeSolidity, setPlan, setAlteredMermaid } =
+    useAgent();
   const [input, setInput] = useState("");
 
   const [files, setFiles] = useState<File[]>([]);
@@ -433,6 +443,9 @@ export default function ChatInterface() {
     setThreadId(data.threadId);
     setMessages([...data.state.messages]);
     setPlan(undefined);
+    setCodeSolidity(undefined);
+    setState(undefined);
+    setAlteredMermaid(undefined);
   };
 
   useEffect(() => {
@@ -484,7 +497,7 @@ export default function ChatInterface() {
               placeholder="Type your message..."
               className="flex-grow p-2"
             />
-            <Button className="p-2" type="submit" disabled={chatWorkflow.isPending}>
+            <Button className="p-2 text-white" type="submit" disabled={chatWorkflow.isPending}>
               {chatWorkflow.isPending ? <LoaderIcon size={24} /> : <SendHorizonalIcon size={24} />}
             </Button>
           </form>

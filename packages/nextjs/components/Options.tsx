@@ -114,8 +114,12 @@ export function Options({ options }: { options: Option[] }) {
               <button className="btn btn-sm btn-outline" onClick={handleCloseModal}>
                 Exit
               </button>
-              <button className="btn btn-sm btn-primary" onClick={handleProceed}>
-                Proceed
+              <button
+                className="btn btn-sm btn-primary text-white"
+                onClick={handleProceed}
+                disabled={chatWorkflow.isPending}
+              >
+                {chatWorkflow.isPending ? <>Loading</> : <>Proceed</>}
               </button>
             </div>
           </div>

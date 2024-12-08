@@ -48,7 +48,14 @@ const agents = [
 
 const Home: NextPage = () => {
   return (
-    <div className="snap-y snap-mandatory overflow-y-scroll h-screen">
+    <div
+      className="snap-y snap-mandatory overflow-y-scroll h-screen"
+      style={{
+        backgroundImage: "url('/chatBg.svg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <section className="snap-start w-full h-screen bg-gradient-to-b from-background to-muted flex flex-col items-center justify-center text-center">
         <Hero />
       </section>
