@@ -1,1 +1,1 @@
-export const FASTAPI_URL = "http://localhost:8000";
+export const FASTAPI_URL = "https://ethindia-fastapi-ishaanshah812.replit.app";
